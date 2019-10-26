@@ -25,9 +25,6 @@ public class EmployeeController {
 		List<Employee> emps = employeeService.getAll();
 		PageInfo<Employee> page = new PageInfo<>(emps,5);
 		model.addAttribute("pageInfo",page);
-		for (Employee employee : emps) {
-			System.out.println(employee);
-		}
 		return "list";
 	}
 }
