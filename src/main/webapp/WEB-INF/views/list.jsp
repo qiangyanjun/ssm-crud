@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-    
+<%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c" %>    
 <%
 	pageContext.setAttribute("APP_PATH",request.getContextPath());
 %>
@@ -40,21 +40,23 @@
 						<th>部门</th>
 						<th>操作</th>				
 					</tr>
-					<tr>
-						<td>1</td>
-						<td>qiang</td>
-						<td>男</td>
-						<td>qiang@126.com</td>
-						<td>开发部</td>
-						<td>
-							<button class="btn btn-primary btn-sm">
-								<span class="glyphicon glyphicon-pencil"></span>&nbsp;编辑
-							</button>
-							<button class="btn btn-danger btn-sm">
-								<span class="glyphicon glyphicon-trash"></span>&nbsp;删除
-							</button>
-						</td>			
-					</tr>
+					<c:forEach items="${pageInfo.list }" var="emp">
+						<tr>
+							<td>${emp.empId }</td>
+							<td>${emp.empName }</td>
+							<td>${emp.gender=="M"?"男":"女" }</td>
+							<td>${emp.email }</td>
+							<td>${emp.department.deptName }</td>
+							<td>
+								<button class="btn btn-primary btn-sm">
+									<span class="glyphicon glyphicon-pencil"></span>&nbsp;编辑
+								</button>
+								<button class="btn btn-danger btn-sm">
+									<span class="glyphicon glyphicon-trash"></span>&nbsp;删除
+								</button>
+							</td>			
+						</tr>
+					</c:forEach>
 				</table>
 			</div>
 		</div>
@@ -63,23 +65,35 @@
 			<div class="col-md-12 text-center">
 				<nav aria-label="Page navigation">
 					  <ul class="pagination">
-					  <li><a href="#">首页</a></li>
+					  <li><a href="${APP_PATH }/emps?pn=1">首页</a></li>
+					    <c:if test="${pageInfo.hasPreviousPage }">
+						    <li>
+						      <a href="${APP_PATH }/emps?pn=${pageInfo.pageNum-1 }" aria-label="Previous">
+						        <span aria-hidden="true">&laquo;</span>
+						      </a>
+						    </li>
+					    </c:if>
+					    <c:if test="${!pageInfo.hasPreviousPage }">
+						    <li class="disabled">
+						      <span>
+						        <span aria-hidden="true">&laquo;</span>
+						      </span>
+						    </li>
+					    </c:if>
+					    <c:forEach items="${pageInfo.navigatepageNums }" var="page_num">
+					    	<c:if test="${page_num==pageInfo.pageNum }">
+					    		<li class="active"><a href="#">${page_num }</a></li>
+					    	</c:if>
+					    	<c:if test="${page_num!=pageInfo.pageNum }">
+							    <li><a href="${APP_PATH }/emps?pn=${page_num }">${page_num }</a></li>
+					    	</c:if>
+					    </c:forEach>
 					    <li>
-					      <a href="#" aria-label="Previous">
-					        <span aria-hidden="true">&laquo;</span>
-					      </a>
-					    </li>
-					    <li><a href="#">1</a></li>
-					    <li><a href="#">2</a></li>
-					    <li><a href="#">3</a></li>
-					    <li><a href="#">4</a></li>
-					    <li><a href="#">5</a></li>
-					    <li>
-					      <a href="#" aria-label="Next">
+					      <a href="${APP_PATH }/emps?pn=${pageInfo.pageNum+1 }" aria-label="Next">
 					        <span aria-hidden="true">&raquo;</span>
 					      </a>
 					    </li>
-					    <li><a href="#">末页</a></li>
+					    <li><a href="${APP_PATH }/emps?pn=${pageInfo.pages }">末页</a></li>
 					  </ul>
 				</nav>
 			</div>
