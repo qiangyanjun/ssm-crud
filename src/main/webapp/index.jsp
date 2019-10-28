@@ -104,13 +104,14 @@
 	      </div>
 	      <div class="modal-footer">
 	        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-	        <button type="button" class="btn btn-primary">保存</button>
+	        <button type="button" class="btn btn-primary" id="emp_save_btn">保存</button>
 	      </div>
 	    </div>
 	  </div>
 	</div>
 	
     <script type="text/javascript">
+    	var totalRecord;
         $(function() {
             // 加载首页
             to_page(1);
@@ -174,7 +175,7 @@
             $("#page_info_area").append("第" + result.extend.pageInfo.pageNum + "页，共" +
                 result.extend.pageInfo.pages + "页，总计" +
                 result.extend.pageInfo.total + "条记录");
-
+            totalRecord = result.extend.pageInfo.total;
         }
 
         // 解析分页条
@@ -255,6 +256,24 @@
 				}
 			});
 		}
+        
+        $("#emp_save_btn").click(function (){
+        	$.ajax({
+        		url:"${APP_PATH}/emp",
+        		type:"POST",
+        		data:$("#empAppModel form").serialize(),
+        		success:function (result){
+        			if(result.code == 100){
+        				//关闭模态框
+        				$('#empAppModel').modal('hide')
+        				//翻到最后一页
+        				to_page(totalRecord);
+        			}else{
+        				
+        			}
+        		}
+        	});
+        });
     </script>
 </body>
 
