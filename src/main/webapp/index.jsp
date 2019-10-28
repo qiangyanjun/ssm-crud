@@ -234,10 +234,27 @@
        
         //点击新增弹出模态框
         $("#emp_add_model_btn").click(function () {
+        	//首先获取部门选项
+        	getDepts("#empAppModel select");
+        	
 			$("#empAppModel").modal({
 				backdrop:"static"
 			});
 		});
+        
+        function getDepts(ele) {
+        	$(ele)
+			$.ajax({
+				url:"${APP_PATH}/depts",
+				type:"GET",
+				success:function(result){
+					$.each(result.extend.depts,function(){
+						var optionEle = $("<option></option>").append(this.deptName).attr("value",this.deptId);
+						optionEle.appendTo(ele);
+					});
+				}
+			});
+		}
     </script>
 </body>
 
