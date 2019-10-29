@@ -74,12 +74,14 @@
 			    <label for="empName_add_input" class="col-sm-2 control-label">姓名</label>
 			    <div class="col-sm-10">
 			      <input type="text" class="form-control" id="empName_add_input" name="empName" placeholder="张三">
+			      <span class="help-block"></span>
 			    </div>
 			  </div>
 			  <div class="form-group">
 			    <label for="email_add_input" class="col-sm-2 control-label">邮箱</label>
 			    <div class="col-sm-10">
 			      <input type="text" class="form-control" id="email_add_input" name="email" placeholder="xxx@xxx.xx">
+			      <span class="help-block"></span>
 			    </div>
 			  </div>
 			  <div class="form-group">
@@ -232,9 +234,18 @@
             var navEle = $("<nav></nav>").append(ul);
             navEle.appendTo("#page_nav_area");
         }
+        
+        //清空表单样式及内容
+        function reset_form(ele){
+        	$(ele)[0].reset();
+        	$(ele).find("*").removeClass("has-error has-success");
+        	$(ele).find(".help-block").text("");
+        }
        
         //点击新增弹出模态框
         $("#emp_add_model_btn").click(function () {
+        	 //清空表单样式及内容
+            reset_form("#empAppModel form");
         	//首先获取部门选项
         	getDepts("#empAppModel select");
         	
@@ -244,7 +255,7 @@
 		});
         
         function getDepts(ele) {
-        	$(ele)
+        	$(ele).empty();
 			$.ajax({
 				url:"${APP_PATH}/depts",
 				type:"GET",
@@ -257,7 +268,73 @@
 			});
 		}
         
+        //校验数据格式
+        function validate_add_form(){
+        	var empName = $("#empName_add_input").val();
+        	var regName = /(^[a-zA-Z0-9_-]{6,16}$)|(^[\u2E80-\u9FFF]{2,5})/;
+        	if(!regName.test(empName)){
+        		show_validate_msg("#empName_add_input","error","用户名是2-5位中文或者6-16位英文和数字的组合");
+        		return false;
+        	}else{
+        		show_validate_msg("#empName_add_input","success","");
+        	}
+        	
+        	//校验邮箱
+        	var email = $("#email_add_input").val();
+        	var regEmail =  /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/;
+        	if(!regEmail.test(email)){
+        		show_validate_msg("#email_add_input","error","邮箱格式不正确");
+        		return false;
+        	}else{
+        		show_validate_msg("#email_add_input","success","");
+        	}
+        	return true;
+        }
+        
+        //校验用户名是否可用
+        $("#empName_add_input").change(function (){
+        	var empName = this.value;
+        	$.ajax({
+        		url:"${APP_PATH}/checkuser",
+        		data:"empName="+empName,
+        		type:"POST",
+        		success:function (result){
+        			if(result.code == 100){
+        				show_validate_msg("#empName_add_input","success","用户名可用");
+        				$("#emp_save_btn").attr("ajax-va","success");
+        			}else{
+        				show_validate_msg("#empName_add_input","error",result.extend.va_msg);
+        				$("#emp_save_btn").attr("ajax-va","error");
+        			}
+        		}
+        	});
+        });
+        
+        //显示校验结果
+        function show_validate_msg(ele,status,msg){
+			$(ele).parent().removeClass("has-success has-error");
+			$(ele).next("span").text("");
+			if("success"==status){
+				$(ele).parent().addClass("has-success");
+				$(ele).next("span").text(msg);
+			}else if("error"==status){
+				$(ele).parent().addClass("has-error");
+				$(ele).next("span").text(msg);
+			}
+        }
+        
+        //点击保存
         $("#emp_save_btn").click(function (){
+        	//校验姓名邮箱格式
+        	if(!validate_add_form()){
+        		return false;
+        	}
+        	
+        	//用户名可用性校验
+        	if($(this).attr("ajax-va")=="error"){
+        		return false;
+        	}
+        	//发送ajax请求保存
         	$.ajax({
         		url:"${APP_PATH}/emp",
         		type:"POST",

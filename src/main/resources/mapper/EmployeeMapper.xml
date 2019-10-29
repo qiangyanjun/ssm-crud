@@ -122,19 +122,18 @@
 	<!-- List<Employee> selectByExampleWithDept(EmployeeExample example); -->
 	<select id="selectByExampleWithDept" resultMap="WithDeptResultMap">
 		select
-		<if test="distinct">
-			distinct
-		</if>
-		<include refid="WithDept_Column_List" />
-		FROM tbl_emp
-		LEFT JOIN tbl_dept 
-		ON tbl_emp.`d_id` = tbl_dept.`dept_id`
-		<if test="_parameter != null">
-			<include refid="Example_Where_Clause" />
-		</if>
-		<if test="orderByClause != null">
-			order by ${orderByClause}
-		</if>
+	    <if test="distinct">
+	      distinct
+	    </if>
+	    <include refid="WithDept_Column_List" />
+		FROM tbl_emp e
+		left join tbl_dept d on e.`d_id`=d.`dept_id`
+	    <if test="_parameter != null">
+	      <include refid="Example_Where_Clause" />
+	    </if>
+	    <if test="orderByClause != null">
+	      order by ${orderByClause}
+	    </if>
 	</select>
 	
 	<!-- Employee selectByPrimaryKeyWithDept(Integer empId); -->
