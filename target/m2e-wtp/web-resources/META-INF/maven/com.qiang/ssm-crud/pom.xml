@@ -10,6 +10,15 @@
 
 	<dependencies>
 	
+		<!-- jsr303 -->
+		<!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-validator -->
+		<dependency>
+		    <groupId>org.hibernate</groupId>
+		    <artifactId>hibernate-validator</artifactId>
+		    <version>5.4.1.Final</version>
+		</dependency>
+				
+		
 		<!-- 分页插件 -->
 		<dependency>
 			<groupId>com.github.pagehelper</groupId>

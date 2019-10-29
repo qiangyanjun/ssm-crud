@@ -1,9 +1,16 @@
 package com.qiang.crud.controller;
 
+import java.io.FileDescriptor;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -50,9 +57,18 @@ public class EmployeeController {
 	 */
 	@RequestMapping(value = "/emp",method = RequestMethod.POST)
 	@ResponseBody
-	public Msg saveEmp(Employee employee) {
-		employeeService.saveEmp(employee);
-		return Msg.success();
+	public Msg saveEmp(@Valid Employee employee,BindingResult result) {
+		if(result.hasErrors()) {
+			Map<String,Object> map = new HashMap<>();
+			List<FieldError> errors = result.getFieldErrors();
+			for (FieldError fieldError : errors) {
+				map.put(fieldError.getField(), fieldError.getDefaultMessage());
+			}
+			return Msg.fail().add("errorFields", map);
+		}else {
+			employeeService.saveEmp(employee);
+			return Msg.success();
+		}
 	}
 	
 	@RequestMapping("/emps")
