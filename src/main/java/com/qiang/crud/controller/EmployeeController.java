@@ -1,6 +1,6 @@
 package com.qiang.crud.controller;
 
-import java.io.FileDescriptor;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,6 +28,47 @@ public class EmployeeController {
 	
 	@Autowired
 	private EmployeeSerivce employeeService;
+	
+	/**
+	 * 删除
+	 * 批量删除传入id串：1-2-3
+	 * 
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value = "/emp/{ids}",method = RequestMethod.DELETE)
+	@ResponseBody
+	public Msg deleteEmp(@PathVariable("ids")String ids) {
+		if(ids.contains("-")) {
+			List<Integer> delIds = new ArrayList<>();
+			String[] strIds = ids.split("-");
+			for (String string : strIds) {
+				delIds.add(Integer.parseInt(string));
+			}
+			employeeService.deleteBatch(delIds);
+		}else {
+			employeeService.deleteEmp(Integer.parseInt(ids));
+		}
+		return Msg.success();
+	}
+	
+	@RequestMapping(value = "/emp/{empId}",method = RequestMethod.PUT)
+	@ResponseBody
+	public Msg updateEmp(Employee employee) {
+		employeeService.updateEmp(employee);
+		return Msg.success();
+	}
+	
+	
+	/**
+	 * 修改时回显，查一个员工
+	 */
+	@RequestMapping("/emp/{id}")
+	@ResponseBody
+	public Msg getEmp(@PathVariable("id")Integer id) {
+		Employee employee = employeeService.getEmp(id);
+		return Msg.success().add("emp", employee);
+	}
 	
 	/**
 	 * 用户名可用性
